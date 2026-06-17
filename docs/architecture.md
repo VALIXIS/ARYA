@@ -1,3 +1,10 @@
+# If a feature does not improve memory,
+# reasoning,
+# goals,
+# or actions,
+#
+# it is not a priority.
+
 # ARYA High-Level Architecture
 
 This document describes ARYA’s high-level architecture as a set of logical layers. It describes responsibilities and boundaries without prescribing implementation details.
