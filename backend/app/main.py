@@ -2,20 +2,20 @@
 main.py
 -------
 Entry point for the ARYA Memory v0.1 backend. Defines the FastAPI app
-and wires together the database, memory service, and AI service into
-HTTP endpoints.
+and wires together the database, memory service, memory retriever, and
+AI service into HTTP endpoints.
 
 Endpoints:
     POST /memory          -> store a new memory
     GET  /memory          -> get all memories
     GET  /memory/search   -> search memories by keyword (?q=...)
-    POST /chat            -> send a message to the local Ollama model
+    POST /chat            -> send a message to the local Ollama model with memories
 """
 
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from . import models, schemas, memory_service, ai_service
+from . import models, schemas, memory_service, memory_retriever, ai_service
 from .database import engine, get_db
 
 # Create database tables on startup if they don't already exist.
@@ -43,10 +43,11 @@ def search_memory(q: str, db: Session = Depends(get_db)):
 
 
 @app.post("/chat", response_model=schemas.ChatResponse)
-def chat(request: schemas.ChatRequest):
-    """Send a message to the local Ollama model (qwen3:8b) and return its reply."""
+def chat(request: schemas.ChatRequest, db: Session = Depends(get_db)):
+    """Send a message to the local Ollama model (qwen3:8b) with relevant memories."""
     try:
-        reply = ai_service.ask_ai(request.message)
+        memories = memory_retriever.retrieve_relevant_memories(db, request.message)
+        reply = ai_service.ask_ai(request.message, memories)
         return schemas.ChatResponse(reply=reply)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI service error: {e}")

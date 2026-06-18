@@ -17,7 +17,24 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
 
-def ask_ai(message: str) -> str:
+def build_prompt(message: str, memories: list[str] | None = None) -> str:
+    """Build the prompt sent to Qwen, including relevant memories when available."""
+    memories = memories or []
+    if not memories:
+        return message
+
+    memory_text = "\n".join(f"- {memory}" for memory in memories)
+    return (
+        "You are ARYA. Use the stored memories below when they are relevant. "
+        "If they are not relevant, answer normally.\n\n"
+        "Stored memories:\n"
+        f"{memory_text}\n\n"
+        "User message:\n"
+        f"{message}"
+    )
+
+
+def ask_ai(message: str, memories: list[str] | None = None) -> str:
     """
     Send a message to the local Ollama model and return its text reply.
 
@@ -27,7 +44,7 @@ def ask_ai(message: str) -> str:
     url = f"{OLLAMA_BASE_URL}/api/generate"
     payload = {
         "model": OLLAMA_MODEL,
-        "prompt": message,
+        "prompt": build_prompt(message, memories),
         "stream": False,
     }
 
