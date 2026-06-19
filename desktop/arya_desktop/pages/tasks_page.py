@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
 )
 
 from arya_desktop.api_client import ApiClient
+from arya_desktop.ui.icons import ICONS, create_svg_icon
+from PySide6.QtCore import Qt
 
 
 class TasksPage(QWidget):
@@ -106,7 +108,29 @@ class TasksPage(QWidget):
         self.list_layout.addStretch()
 
     def _add_empty(self, text: str) -> None:
-        self._add_card(text, "", "")
+        empty_container = QWidget()
+        empty_layout = QVBoxLayout(empty_container)
+        empty_layout.setAlignment(Qt.AlignCenter)
+        
+        icon_label = QLabel()
+        icon = create_svg_icon(ICONS.get("EmptyState", ""), color="#4b5563")
+        pixmap = icon.pixmap(48, 48)
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignCenter)
+        
+        text_label = QLabel(text)
+        text_label.setObjectName("PlaceholderText")
+        text_label.setAlignment(Qt.AlignCenter)
+        
+        empty_layout.addStretch()
+        empty_layout.addWidget(icon_label)
+        empty_layout.addWidget(text_label)
+        empty_layout.addStretch()
+        
+        stretch_item = self.list_layout.takeAt(self.list_layout.count() - 1)
+        self.list_layout.addWidget(empty_container)
+        if stretch_item is not None:
+            self.list_layout.addItem(stretch_item)
 
     def _add_card(self, title: str, meta: str, detail: str) -> None:
         card = QFrame()

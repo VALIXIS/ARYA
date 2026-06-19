@@ -4,7 +4,7 @@ chat_page.py
 Chat UI for ARYA Desktop.
 """
 
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from datetime import datetime
 
 from arya_desktop.api_client import ApiClient
 
@@ -47,6 +48,7 @@ class ChatPage(QWidget):
         super().__init__()
         self.api_client = api_client or ApiClient()
         self.worker: ChatWorker | None = None
+        self.typing_bubble: QFrame | None = None
 
         self.history_layout: QVBoxLayout
         self.message_input: QLineEdit
@@ -136,21 +138,66 @@ class ChatPage(QWidget):
         self.send_button.setDisabled(waiting)
         self.send_button.setText("Sending..." if waiting else "Send")
 
-    def _add_message(self, role: str, content: str) -> None:
-        """Add one message bubble to the chat history."""
+        if waiting and not self.typing_bubble:
+            self.typing_bubble = self._create_bubble("assistant", "ARYA is typing...", "")
+            # We insert it without standard stretching logic so it's easy to remove
+            row = QHBoxLayout()
+            row.setContentsMargins(0, 0, 0, 0)
+            row.addWidget(self.typing_bubble)
+            row.addStretch()
+            
+            stretch_item = self.history_layout.takeAt(self.history_layout.count() - 1)
+            self.history_layout.addLayout(row)
+            if stretch_item is not None:
+                self.history_layout.addItem(stretch_item)
+                
+        elif not waiting and self.typing_bubble:
+            # Remove the typing bubble row
+            for i in range(self.history_layout.count()):
+                item = self.history_layout.itemAt(i)
+                if item and item.layout():
+                    for j in range(item.layout().count()):
+                        if item.layout().itemAt(j).widget() == self.typing_bubble:
+                            layout_to_remove = item.layout()
+                            while layout_to_remove.count():
+                                child = layout_to_remove.takeAt(0)
+                                if child.widget():
+                                    child.widget().deleteLater()
+                            self.history_layout.removeItem(layout_to_remove)
+                            self.typing_bubble = None
+                            return
+
+    def _create_bubble(self, role: str, content: str, timestamp: str) -> QFrame:
         bubble = QFrame()
         bubble.setObjectName("UserBubble" if role == "user" else "AssistantBubble")
         bubble.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Minimum)
 
         bubble_layout = QVBoxLayout(bubble)
-        bubble_layout.setContentsMargins(14, 10, 14, 10)
+        bubble_layout.setContentsMargins(16, 12, 16, 12)
+        bubble_layout.setSpacing(4)
 
         label = QLabel(content)
         label.setWordWrap(True)
-        label.setTextInteractionFlags(label.textInteractionFlags())
+        label.setTextInteractionFlags(Qt.TextSelectableByMouse) if hasattr(Qt, 'TextSelectableByMouse') else label.setTextInteractionFlags(label.textInteractionFlags())
         label.setMinimumWidth(220)
         label.setMaximumWidth(620)
         bubble_layout.addWidget(label)
+
+        if timestamp:
+            time_label = QLabel(timestamp)
+            time_label.setObjectName("MetaText")
+            # Align time to right
+            time_layout = QHBoxLayout()
+            time_layout.addStretch()
+            time_layout.addWidget(time_label)
+            bubble_layout.addLayout(time_layout)
+
+        return bubble
+
+    def _add_message(self, role: str, content: str) -> None:
+        """Add one message bubble to the chat history."""
+        timestamp = datetime.now().strftime("%I:%M %p")
+        bubble = self._create_bubble(role, content, timestamp)
 
         row = QHBoxLayout()
         row.setContentsMargins(0, 0, 0, 0)

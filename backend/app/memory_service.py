@@ -20,6 +20,7 @@ class MemorySnapshot:
 
     id: int
     content: str
+    category: str
     created_at: datetime
 
 
@@ -37,6 +38,7 @@ def _snapshot(memory: models.Memory) -> MemorySnapshot:
     return MemorySnapshot(
         id=memory.id,
         content=memory.content,
+        category=memory.category,
         created_at=memory.created_at,
     )
 
@@ -52,7 +54,7 @@ def save_memory(db: Session, memory: schemas.MemoryCreate) -> models.Memory:
     if existing_memory:
         return existing_memory
 
-    db_memory = models.Memory(content=content)
+    db_memory = models.Memory(content=content, category=memory.category)
     db.add(db_memory)
     db.commit()
     db.refresh(db_memory)

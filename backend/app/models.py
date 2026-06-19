@@ -17,6 +17,7 @@ class Memory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String, nullable=False)
+    category = Column(String, nullable=False, default="Other")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 

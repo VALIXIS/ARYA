@@ -1,0 +1,1 @@
+﻿import subprocess, sys, time; process = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(10)'], creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW); print(process.pid)

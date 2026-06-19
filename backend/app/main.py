@@ -15,7 +15,9 @@ from . import (
     conversation_service,
     context_resolver,
     desktop_actions,
-    desktop_commands,
+    action_planner,
+    agent_planner,
+    agent_executor,
     goal_commands,
     goal_service,
     memory_commands,
@@ -137,10 +139,24 @@ def chat(request: schemas.ChatRequest, db: Session = Depends(get_db)):
         return schemas.ChatResponse(reply=reply)
 
     try:
-        desktop_action = desktop_commands.detect_desktop_action(request.message)
-        if desktop_action:
-            reply = desktop_actions.run_desktop_action(desktop_action)
+        print(f"[CHAT] Received: {request.message!r}")
+
+        # ---- Agent Core (v1.1) ----------------------------------------
+        print("[AGENT] Planning...")
+        agent_plan = agent_planner.plan(request.message)
+        if agent_plan:
+            reply = agent_executor.execute(agent_plan)
             return finish(reply)
+        print("[AGENT] No plan — continuing to legacy handlers")
+
+        # ---- Legacy action planner (kept as fallback) ------------------
+        print("[CHAT] Action planner attempted")
+        planned_actions = action_planner.plan_actions(request.message)
+        if planned_actions:
+            print(f"[CHAT] Action planner returned {len(planned_actions)} step(s) — executing")
+            reply = desktop_actions.execute_action_chain(planned_actions)
+            return finish(reply)
+        print("[CHAT] Action planner returned nothing — continuing")
 
         memory_to_save = memory_commands.detect_remember_command(request.message)
         if memory_to_save:
@@ -220,10 +236,20 @@ def chat(request: schemas.ChatRequest, db: Session = Depends(get_db)):
         if news_reply is not None:
             return finish(news_reply)
 
-        extracted_memory = memory_extractor.extract_memory(request.message)
-        if extracted_memory:
-            memory = schemas.MemoryCreate(content=extracted_memory)
-            memory_service.save_memory(db, memory)
+        print("[CHAT] Memory extraction attempted")
+        extracted_memories = memory_extractor.extract_memories(request.message)
+        if extracted_memories:
+            for mem_dict in extracted_memories:
+                memory = schemas.MemoryCreate(
+                    content=mem_dict["content"],
+                    category=mem_dict.get("category", "Other")
+                )
+                memory_service.save_memory(db, memory)
+                print(f"[MEMORY] Saved: {mem_dict['content']!r} [{mem_dict.get('category', 'Other')}]")
+        else:
+            print("[CHAT] Memory extraction returned [] — no personal facts detected")
+
+        print("[CHAT] Falling back to AI")
 
         conversation_start = performance_service.start_timer()
         recent_messages = conversation_service.get_cached_recent_messages(limit=4)

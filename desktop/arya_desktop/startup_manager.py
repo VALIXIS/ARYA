@@ -31,19 +31,26 @@ def get_shortcut_path() -> Path:
 
 
 def get_launch_target() -> tuple[str, str, str]:
-    """Return target path, arguments, and working directory for startup."""
+    """Return target path, arguments, and working directory for startup.
+
+    Uses ``pythonw.exe`` (windowless interpreter) with ``-m`` module
+    invocation so that no console window appears on Windows startup.
+    """
     if getattr(sys, "frozen", False):
         target = str(Path(sys.executable).resolve())
         return target, "", str(Path(target).parent)
 
-    if sys.argv and sys.argv[0].lower().endswith((".py", ".pyw")):
-        script = str(Path(sys.argv[0]).resolve())
-        target = str(Path(sys.executable).resolve())
-        return target, script, str(Path(script).parent)
+    # Locate pythonw.exe next to the current python.exe.
+    # Avoid aggressive resolve() to prevent escaping the virtual environment.
+    python_dir = Path(sys.executable).parent
+    pythonw = python_dir / "pythonw.exe"
+    target = str(pythonw if pythonw.exists() else sys.executable)
 
-    main_script = Path(__file__).resolve().parent / "main.py"
-    target = str(Path(sys.executable).resolve())
-    return target, str(main_script.resolve()), str(main_script.parent)
+    # Working directory must be the desktop/ package root so that
+    # ``-m arya_desktop.main`` resolves correctly.
+    desktop_dir = Path(__file__).resolve().parents[1]
+    arguments = f"-m arya_desktop.main"
+    return target, arguments, str(desktop_dir)
 
 
 def _powershell_string(value: str) -> str:
@@ -73,6 +80,7 @@ $shortcut = $shell.CreateShortcut({_powershell_string(str(shortcut_path))})
 $shortcut.TargetPath = {_powershell_string(target)}
 $shortcut.Arguments = {_powershell_string(arguments)}
 $shortcut.WorkingDirectory = {_powershell_string(working_dir)}
+$shortcut.WindowStyle = 1
 $shortcut.Description = 'Launch ARYA Desktop on Windows startup'
 $shortcut.Save()
 """.strip()

@@ -1,0 +1,1 @@
+﻿import subprocess, sys; process = subprocess.Popen(['C:\\Users\\nagas\\Documents\\PROJECTS\\ARYA\\.venv\\Scripts\\python.exe', '-c', 'import time; time.sleep(10)'], creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW); print(process.pid)

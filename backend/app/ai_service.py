@@ -57,6 +57,28 @@ def build_prompt(
     return "\n\n".join(prompt_parts)
 
 
+def query_llm(system_prompt: str, user_message: str) -> str:
+    """
+    Send a single-turn message to Ollama with a custom system prompt.
+    No memories, no conversation history injected.
+    Used by memory_extractor and action_planner for structured JSON tasks.
+    """
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_message},
+    ]
+    url = f"{OLLAMA_BASE_URL}/api/chat"
+    payload = {
+        "model": OLLAMA_MODEL,
+        "messages": messages,
+        "stream": False,
+    }
+    response = requests.post(url, json=payload, timeout=60)
+    response.raise_for_status()
+    data = response.json()
+    return data.get("message", {}).get("content", "").strip()
+
+
 def ask_ai(
     message: str,
     memories: list[str] | None = None,

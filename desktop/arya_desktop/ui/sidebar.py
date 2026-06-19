@@ -4,8 +4,10 @@ sidebar.py
 Sidebar navigation for ARYA Desktop.
 """
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout, QWidget
+
+from arya_desktop.ui.icons import ICONS, create_svg_icon
 
 
 class Sidebar(QFrame):
@@ -19,7 +21,7 @@ class Sidebar(QFrame):
         self.setFixedWidth(220)
 
         self.buttons: dict[str, QPushButton] = {}
-        self.pages = ["Chat", "Tasks", "Goals", "Memories", "Profile", "Settings"]
+        self.pages = ["Chat", "Tasks", "Goals", "Memories", "Profile", "Settings", "About"]
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(12, 8, 12, 14)
@@ -30,9 +32,14 @@ class Sidebar(QFrame):
         layout.addWidget(title)
 
         for page_name in self.pages:
-            button = QPushButton(page_name)
+            button = QPushButton(f"  {page_name}")
             button.setObjectName("NavButton")
             button.setCursor(Qt.PointingHandCursor)
+            
+            icon = create_svg_icon(ICONS.get(page_name, ""), color="#a3a6ae")
+            button.setIcon(icon)
+            button.setIconSize(QSize(20, 20))
+            
             button.clicked.connect(lambda checked=False, name=page_name: self.select_page(name))
             self.buttons[page_name] = button
             layout.addWidget(button)

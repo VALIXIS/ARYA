@@ -33,12 +33,13 @@ def dark_theme() -> str:
 
     #NavButton {
         background: transparent;
-        color: #c9cbd1;
+        color: #a3a6ae;
         border: none;
         border-radius: 8px;
-        padding: 11px 14px;
+        padding: 10px 14px;
         text-align: left;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 14px;
     }
 
     #NavButton:hover {
@@ -115,13 +116,15 @@ def dark_theme() -> str:
 
     #UserBubble {
         background: #2f3138;
-        border-radius: 8px;
+        border-radius: 12px;
+        border-bottom-right-radius: 4px;
     }
 
     #AssistantBubble {
         background: #18191c;
         border: 1px solid #2a2b30;
-        border-radius: 8px;
+        border-radius: 12px;
+        border-bottom-left-radius: 4px;
     }
 
     #RefreshButton {
@@ -161,6 +164,18 @@ def dark_theme() -> str:
     #MetaText {
         color: #a3a6ae;
         font-size: 12px;
+    }
+
+    #PlaceholderTitle {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    #PlaceholderText {
+        color: #a3a6ae;
+        font-size: 14px;
     }
 
     #SettingsCheckbox {

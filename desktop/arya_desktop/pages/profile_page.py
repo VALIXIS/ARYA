@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
 )
 
 from arya_desktop.api_client import ApiClient
+from arya_desktop.ui.icons import ICONS, create_svg_icon
+from PySide6.QtCore import Qt
 
 
 class ProfilePage(QWidget):
@@ -57,14 +59,36 @@ class ProfilePage(QWidget):
 
         panel = QFrame()
         panel.setObjectName("DataCard")
-        panel_layout = QVBoxLayout(panel)
-        panel_layout.setContentsMargins(18, 18, 18, 18)
+        self.content_layout = QVBoxLayout(panel)
+        self.content_layout.setContentsMargins(18, 18, 18, 18)
 
-        self.profile_label = QLabel("No profile loaded yet.")
+        self.profile_label = QLabel()
         self.profile_label.setObjectName("BodyText")
         self.profile_label.setWordWrap(True)
-        panel_layout.addWidget(self.profile_label)
-        panel_layout.addStretch()
+        self.profile_label.hide()
+        
+        self.empty_container = QWidget()
+        empty_layout = QVBoxLayout(self.empty_container)
+        empty_layout.setAlignment(Qt.AlignCenter)
+        
+        icon_label = QLabel()
+        icon = create_svg_icon(ICONS.get("EmptyState", ""), color="#4b5563")
+        pixmap = icon.pixmap(48, 48)
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignCenter)
+        
+        self.empty_text = QLabel("No profile loaded yet.")
+        self.empty_text.setObjectName("PlaceholderText")
+        self.empty_text.setAlignment(Qt.AlignCenter)
+        
+        empty_layout.addStretch()
+        empty_layout.addWidget(icon_label)
+        empty_layout.addWidget(self.empty_text)
+        empty_layout.addStretch()
+
+        self.content_layout.addWidget(self.profile_label)
+        self.content_layout.addWidget(self.empty_container)
+        self.content_layout.addStretch()
 
         scroll_area = QScrollArea()
         scroll_area.setObjectName("DataScrollArea")
@@ -86,6 +110,14 @@ class ProfilePage(QWidget):
             self.status_label.setText(f"Could not load profile: {error}")
             return
 
-        profile = data.get("profile", "No profile available.")
-        self.profile_label.setText(profile)
+        profile = data.get("profile", "")
+        if profile:
+            self.empty_container.hide()
+            self.profile_label.show()
+            self.profile_label.setText(profile)
+        else:
+            self.profile_label.hide()
+            self.empty_text.setText("Profile is empty.")
+            self.empty_container.show()
+            
         self.status_label.setText("Profile loaded")

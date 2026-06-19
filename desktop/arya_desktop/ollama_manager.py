@@ -4,6 +4,7 @@ ollama_manager.py
 Auto-start Ollama when the ARYA desktop app launches.
 """
 
+import logging
 import os
 import shutil
 import subprocess
@@ -12,7 +13,9 @@ import time
 
 import requests
 
-from arya_desktop.config import OLLAMA_HEALTH_URL
+from arya_desktop.config import OLLAMA_HEALTH_URL, OLLAMA_LOG
+
+log = logging.getLogger(__name__)
 
 OLLAMA_POLL_INTERVAL = 1.0  # seconds between retries
 OLLAMA_POLL_TIMEOUT = 30    # max seconds to wait
@@ -21,6 +24,14 @@ OLLAMA_CONNECT_TIMEOUT = 2  # HTTP request timeout
 # Default Windows install path for Ollama
 _WINDOWS_OLLAMA_PATH = os.path.join(
     os.environ.get("LOCALAPPDATA", ""), "Programs", "Ollama", "ollama.exe"
+)
+
+# Fully detach the child process on Windows so closing any console
+# window does not terminate it.
+_DETACH_FLAGS = (
+    subprocess.DETACHED_PROCESS          # 0x00000008 — no inherited console
+    | subprocess.CREATE_NEW_PROCESS_GROUP  # 0x00000200 — own process group
+    | subprocess.CREATE_NO_WINDOW          # 0x08000000 — no new console window
 )
 
 
@@ -48,21 +59,22 @@ def _find_ollama() -> str | None:
 
 
 def _launch_ollama(executable: str) -> subprocess.Popen | None:
-    """Start ``ollama serve`` as a detached background process."""
+    """Start ``ollama serve`` as a fully detached background process."""
     try:
-        creation_flags = 0
-        if sys.platform == "win32":
-            creation_flags = subprocess.CREATE_NO_WINDOW
+        log_file = open(OLLAMA_LOG, "a", encoding="utf-8")  # noqa: SIM115
+
+        creation_flags = _DETACH_FLAGS if sys.platform == "win32" else 0
 
         process = subprocess.Popen(
             [executable, "serve"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stdout=log_file,
+            stderr=log_file,
             creationflags=creation_flags,
+            close_fds=True,
         )
         return process
     except Exception as exc:
-        print(f"[STARTUP] Failed to launch Ollama: {exc}")
+        log.error("[STARTUP] Failed to launch Ollama: %s", exc)
         return None
 
 
@@ -86,25 +98,25 @@ def ensure_ollama() -> str:
         ``"started"``         – Ollama was launched and is now healthy.
         ``"failed"``          – Ollama could not be started.
     """
-    print("[STARTUP] Checking Ollama...")
+    log.info("[STARTUP] Checking Ollama...")
 
     if _is_healthy():
-        print("[STARTUP] Ollama already running")
+        log.info("[STARTUP] Ollama already running")
         return "already_running"
 
     executable = _find_ollama()
     if executable is None:
-        print("[STARTUP] Ollama executable not found")
+        log.error("[STARTUP] Ollama executable not found")
         return "failed"
 
-    print("[STARTUP] Starting Ollama...")
+    log.info("[STARTUP] Starting Ollama...")
     process = _launch_ollama(executable)
     if process is None:
         return "failed"
 
     if _wait_until_healthy():
-        print("[STARTUP] Ollama started")
+        log.info("[STARTUP] Ollama started")
         return "started"
 
-    print("[STARTUP] Ollama failed to start")
+    log.error("[STARTUP] Ollama failed to start")
     return "failed"

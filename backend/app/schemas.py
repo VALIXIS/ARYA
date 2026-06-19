@@ -12,12 +12,14 @@ from pydantic import BaseModel
 class MemoryCreate(BaseModel):
     """Data required to create a new memory."""
     content: str
+    category: str = "Other"
 
 
 class MemoryResponse(BaseModel):
     """Data returned to the client for a stored memory."""
     id: int
     content: str
+    category: str
     created_at: datetime
 
     class Config:

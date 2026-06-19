@@ -14,6 +14,7 @@ from arya_desktop.pages.memories_page import MemoriesPage
 from arya_desktop.pages.profile_page import ProfilePage
 from arya_desktop.pages.settings_page import SettingsPage
 from arya_desktop.pages.tasks_page import TasksPage
+from arya_desktop.pages.about_page import AboutPage
 from arya_desktop.ui.sidebar import Sidebar
 from arya_desktop.ui.system_tray import AryaSystemTray
 
@@ -65,6 +66,7 @@ class MainWindow(QMainWindow):
             "Memories": MemoriesPage(),
             "Profile": ProfilePage(),
             "Settings": SettingsPage(),
+            "About": AboutPage(),
         }
 
         for page_name, page in pages.items():
