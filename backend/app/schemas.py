@@ -32,3 +32,45 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     """The AI's reply."""
     reply: str
+
+
+class TaskCreate(BaseModel):
+    """Data required to create a task."""
+    title: str
+
+
+class TaskResponse(BaseModel):
+    """Data returned to the client for a task."""
+    id: int
+    title: str
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class GoalResponse(BaseModel):
+    """Data returned to the client for a goal."""
+    id: int
+    title: str
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class NewsHeadline(BaseModel):
+    """One news headline."""
+    title: str
+    link: str
+    source: str
+
+
+class NewsResponse(BaseModel):
+    """Structured news payload for GET /news."""
+    ai_news: list[NewsHeadline]
+    technology_news: list[NewsHeadline]
+    cached: bool
+    last_updated: str | None

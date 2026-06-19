@@ -1,0 +1,98 @@
+"""
+startup_manager.py
+------------------
+Windows startup shortcut management for ARYA Desktop.
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+STARTUP_SHORTCUT_NAME = "ARYA Desktop.lnk"
+
+
+def is_windows() -> bool:
+    """Return True when running on Windows."""
+    return sys.platform == "win32"
+
+
+def get_startup_folder() -> Path:
+    """Return the Windows Startup folder path."""
+    appdata = os.environ.get("APPDATA")
+    if not appdata:
+        raise OSError("APPDATA environment variable is not set.")
+    return Path(appdata) / "Microsoft" / "Windows" / "Start Menu" / "Programs" / "Startup"
+
+
+def get_shortcut_path() -> Path:
+    """Return the ARYA startup shortcut path."""
+    return get_startup_folder() / STARTUP_SHORTCUT_NAME
+
+
+def get_launch_target() -> tuple[str, str, str]:
+    """Return target path, arguments, and working directory for startup."""
+    if getattr(sys, "frozen", False):
+        target = str(Path(sys.executable).resolve())
+        return target, "", str(Path(target).parent)
+
+    if sys.argv and sys.argv[0].lower().endswith((".py", ".pyw")):
+        script = str(Path(sys.argv[0]).resolve())
+        target = str(Path(sys.executable).resolve())
+        return target, script, str(Path(script).parent)
+
+    main_script = Path(__file__).resolve().parent / "main.py"
+    target = str(Path(sys.executable).resolve())
+    return target, str(main_script.resolve()), str(main_script.parent)
+
+
+def _powershell_string(value: str) -> str:
+    """Escape a value for use in a PowerShell single-quoted string."""
+    return "'" + value.replace("'", "''") + "'"
+
+
+def is_startup_enabled() -> bool:
+    """Return True if the startup shortcut exists."""
+    if not is_windows():
+        return False
+    return get_shortcut_path().exists()
+
+
+def enable_startup() -> None:
+    """Create a shortcut in the Windows Startup folder."""
+    if not is_windows():
+        raise OSError("Startup shortcuts are only supported on Windows.")
+
+    target, arguments, working_dir = get_launch_target()
+    shortcut_path = get_shortcut_path()
+    shortcut_path.parent.mkdir(parents=True, exist_ok=True)
+
+    command = f"""
+$shell = New-Object -ComObject WScript.Shell
+$shortcut = $shell.CreateShortcut({_powershell_string(str(shortcut_path))})
+$shortcut.TargetPath = {_powershell_string(target)}
+$shortcut.Arguments = {_powershell_string(arguments)}
+$shortcut.WorkingDirectory = {_powershell_string(working_dir)}
+$shortcut.Description = 'Launch ARYA Desktop on Windows startup'
+$shortcut.Save()
+""".strip()
+
+    result = subprocess.run(
+        ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "Unknown error"
+        raise RuntimeError(f"Could not create startup shortcut: {detail}")
+
+
+def disable_startup() -> None:
+    """Remove the ARYA startup shortcut."""
+    if not is_windows():
+        return
+
+    shortcut_path = get_shortcut_path()
+    if shortcut_path.exists():
+        shortcut_path.unlink()

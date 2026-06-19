@@ -12,7 +12,9 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./arya.db")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'arya.db')}"
+DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
 
 # check_same_thread=False is required for SQLite when used with FastAPI,
 # because FastAPI may use the connection across different threads.

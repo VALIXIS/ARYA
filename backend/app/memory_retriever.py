@@ -35,6 +35,8 @@ STOP_WORDS = {
     "you",
 }
 
+MAX_MEMORY_CONTENT_CHARS = 300
+
 
 def _keywords(message: str) -> list[str]:
     """Extract simple keyword search terms from a chat message."""
@@ -46,20 +48,35 @@ def _keywords(message: str) -> list[str]:
     return words
 
 
-def retrieve_relevant_memories(db: Session, message: str, limit: int = 5) -> list[str]:
+def _truncate_memory(content: str) -> str:
+    """Keep memory prompt content compact."""
+    if len(content) <= MAX_MEMORY_CONTENT_CHARS:
+        return content
+
+    return content[:MAX_MEMORY_CONTENT_CHARS].rstrip() + "..."
+
+
+def retrieve_relevant_memories(
+    db: Session,
+    message: str,
+    limit: int = 3,
+    memories=None,
+) -> list[str]:
     """Return memory contents that match the user's message."""
     keywords = _keywords(message)
     if not keywords:
         return []
 
+    memory_rows = memories if memories is not None else memory_service.get_cached_memories(db)
     relevant_memories = []
     seen_ids = set()
 
-    for keyword in keywords:
-        for memory in memory_service.search_memories(db, keyword):
+    for memory in memory_rows:
+        memory_text = memory.content.lower()
+        if any(keyword in memory_text for keyword in keywords):
             if memory.id not in seen_ids:
                 seen_ids.add(memory.id)
-                relevant_memories.append(memory.content)
+                relevant_memories.append(_truncate_memory(memory.content))
 
             if len(relevant_memories) >= limit:
                 return relevant_memories
