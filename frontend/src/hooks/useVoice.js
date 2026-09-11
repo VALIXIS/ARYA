@@ -206,6 +206,15 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
       }
       setIsListening(false);
       stopAudioAnalysis();
+      
+      // Flush any pending transcript when manually stopped
+      setTranscript((currentStr) => {
+        const finalStr = currentStr.trim();
+        if (finalStr && !wakeWordModeRef.current && callbacksRef.current.onTranscriptReady) {
+          callbacksRef.current.onTranscriptReady(finalStr);
+        }
+        return '';
+      });
     }
   }, []);
 
