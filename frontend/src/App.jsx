@@ -143,9 +143,9 @@ export default function App() {
       {/* Top HUD Header */}
       <header className="h-16 px-4 md:px-8 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl flex items-center justify-between z-30 sticky top-0">
         <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-blue-600 p-0.5 shadow-lg shadow-cyan-500/20">
+          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 p-0.5 shadow-lg shadow-amber-500/20">
             <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <span className="font-extrabold text-lg text-transparent bg-clip-text bg-gradient-to-r from-arya-cyan to-arya-blue">
+              <span className="font-extrabold text-lg text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">
                 A
               </span>
             </div>
@@ -155,7 +155,7 @@ export default function App() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-bold text-base tracking-wider text-white">PROJECT ARYA</h1>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800/50 text-cyan-300 font-semibold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 border border-amber-800/50 text-amber-300 font-semibold">
                 v3.0 JARVIS
               </span>
             </div>
@@ -205,7 +205,7 @@ export default function App() {
             onClick={() => setAutoVoiceReply(!autoVoiceReply)}
             className={`p-2 rounded-lg border text-xs font-mono flex items-center gap-1.5 transition-colors ${
               autoVoiceReply
-                ? 'bg-cyan-950/40 border-cyan-800/60 text-cyan-300'
+                ? 'bg-amber-950/40 border-amber-800/60 text-amber-300'
                 : 'bg-slate-900 border-slate-800 text-slate-500'
             }`}
             title="Auto Read Replies Aloud"
@@ -263,7 +263,7 @@ export default function App() {
 
             {/* Gemini / Siri Style Live Real-Time Voice Overlay */}
             {isListening && (
-              <div className="w-full max-w-2xl px-6 py-4 rounded-3xl bg-slate-950/90 border border-amber-500/40 shadow-2xl shadow-cyan-500/20 backdrop-blur-2xl flex flex-col items-center gap-3 animate-fadeIn">
+              <div className="w-full max-w-2xl px-6 py-4 rounded-3xl bg-slate-950/90 border border-amber-500/40 shadow-2xl shadow-amber-500/20 backdrop-blur-2xl flex flex-col items-center gap-3 animate-fadeIn">
                 {/* Siri / Gemini Multi-Color Dynamic Waveform Bar */}
                 <div className="flex items-center gap-1.5 h-6">
                   {[0.3, 0.7, 0.9, 0.5, 1.0, 0.6, 0.8, 0.4].map((multiplier, i) => (
@@ -271,7 +271,7 @@ export default function App() {
                       key={i}
                       className={`w-1 rounded-full transition-all duration-75 ${
                         i % 4 === 0
-                          ? 'bg-cyan-400 shadow-md shadow-cyan-400/50'
+                          ? 'bg-amber-400 shadow-md shadow-amber-400/50'
                           : i % 4 === 1
                           ? 'bg-indigo-400 shadow-md shadow-indigo-400/50'
                           : i % 4 === 2
@@ -375,7 +375,7 @@ export default function App() {
               className={`p-3.5 rounded-xl transition-all flex items-center justify-center shrink-0 ${
                 isListening
                   ? 'bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/40'
-                  : 'bg-amber-500 text-slate-950 font-bold hover:bg-cyan-300 shadow-lg shadow-cyan-500/25'
+                  : 'bg-amber-500 text-slate-950 font-bold hover:bg-amber-300 shadow-lg shadow-amber-500/25'
               }`}
               title={isListening ? 'Release / Stop Listening' : 'Press to Speak'}
             >

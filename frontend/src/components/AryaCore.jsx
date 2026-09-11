@@ -35,14 +35,14 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0x00f2fe, 3, 50);
+    const pointLight = new THREE.PointLight(0xf59e0b, 3, 50);
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
 
     // 4. Central Hologram Core (Wireframe Icosahedron)
     const coreGeo = new THREE.IcosahedronGeometry(1.35, 2);
     const coreMat = new THREE.MeshBasicMaterial({
-      color: 0x00f2fe,
+      color: 0xf59e0b,
       wireframe: true,
       transparent: true,
       opacity: 0.65,
@@ -53,7 +53,7 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
     // Inner Solid Glow Sphere
     const innerGeo = new THREE.SphereGeometry(0.85, 32, 32);
     const innerMat = new THREE.MeshBasicMaterial({
-      color: 0x00a8ff,
+      color: 0xf59e0b,
       transparent: true,
       opacity: 0.4,
     });
@@ -71,9 +71,9 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
       return new THREE.Mesh(geo, mat);
     };
 
-    const ring1 = createRing(2.0, 0.015, 0x00f2fe);
-    const ring2 = createRing(2.35, 0.012, 0x7f00ff);
-    const ring3 = createRing(2.7, 0.018, 0x00ffd5);
+    const ring1 = createRing(2.0, 0.015, 0xf59e0b);
+    const ring2 = createRing(2.35, 0.012, 0xd97706);
+    const ring3 = createRing(2.7, 0.018, 0xfbbf24);
 
     ring1.rotation.x = Math.PI / 4;
     ring2.rotation.y = Math.PI / 3;
@@ -103,7 +103,7 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
 
     const particleMat = new THREE.PointsMaterial({
-      color: 0x00f2fe,
+      color: 0xf59e0b,
       size: 0.035,
       transparent: true,
       opacity: 0.75,
@@ -142,15 +142,15 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
       const elapsed = clock.getElapsedTime();
 
       // State-driven color & speed parameters
-      let targetColor = new THREE.Color(0x00f2fe);
-      let ringColor2 = new THREE.Color(0x7f00ff);
+      let targetColor = new THREE.Color(0xf59e0b);
+      let ringColor2 = new THREE.Color(0xd97706);
       let rotSpeed = 0.008;
       let pulseAmp = 0.08;
       let pulseFreq = 2.0;
 
       if (state === 'listening') {
-        targetColor.setHex(0x00ffd5); // Bright Electric Teal
-        ringColor2.setHex(0x00f2fe);
+        targetColor.setHex(0xfbbf24); // Bright Electric Teal
+        ringColor2.setHex(0xf59e0b);
         rotSpeed = 0.02;
         pulseAmp = 0.25 + audioLevel * 0.4;
         pulseFreq = 6.0;
@@ -161,14 +161,14 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
         pulseAmp = 0.18;
         pulseFreq = 4.5;
       } else if (state === 'executing') {
-        targetColor.setHex(0xa855f7); // Neon Purple
+        targetColor.setHex(0xef4444); // Neon Purple
         ringColor2.setHex(0xff0844); // Crimson
         rotSpeed = 0.035;
         pulseAmp = 0.22;
         pulseFreq = 5.0;
       } else if (state === 'speaking') {
-        targetColor.setHex(0x38bdf8); // Sky Blue
-        ringColor2.setHex(0x00f2fe);
+        targetColor.setHex(0xffffff); // Sky Blue
+        ringColor2.setHex(0xf59e0b);
         rotSpeed = 0.015;
         pulseAmp = 0.3 + audioLevel * 0.3;
         pulseFreq = 7.0;
@@ -234,7 +234,7 @@ export default function AryaCore({ state = 'idle', audioLevel = 0 }) {
 
       {/* Holographic Status Ring Overlay */}
       <div className="absolute pointer-events-none flex flex-col items-center bottom-2">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-arya-card/80 border border-slate-700/60 backdrop-blur-md">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 backdrop-blur-md">
           <span
             className={`w-2 h-2 rounded-full animate-ping ${
               state === 'idle'

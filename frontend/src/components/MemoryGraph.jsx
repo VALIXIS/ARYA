@@ -682,7 +682,7 @@ export default function MemoryGraph({ onSelectTab, onSendMessage }) {
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 bg-slate-900/90 border-b border-slate-800/90 z-10 backdrop-blur-xl">
         {/* Title & Real-Time Stats */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-950/80 border border-amber-500/40 text-amber-500 shadow-md shadow-cyan-500/20">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-950/80 border border-amber-500/40 text-amber-500 shadow-md shadow-amber-500/20">
             <Network className="w-4 h-4" />
           </div>
           <div>
@@ -690,8 +690,8 @@ export default function MemoryGraph({ onSelectTab, onSendMessage }) {
               <h2 className="text-xs font-bold uppercase tracking-wider text-white font-mono">
                 Memory Knowledge Graph
               </h2>
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-300 font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 border border-amber-800 text-amber-300 font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                 {graphData.nodes.length} Nodes
               </span>
             </div>
@@ -911,7 +911,7 @@ export default function MemoryGraph({ onSelectTab, onSendMessage }) {
                           if (onSelectTab) onSelectTab('cockpit');
                         }
                       }}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/60 border border-cyan-800/60 text-cyan-300 hover:bg-cyan-900 text-xs font-mono transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-950/60 border border-amber-800/60 text-amber-300 hover:bg-amber-900 text-xs font-mono transition-colors"
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       <span>Ask ARYA</span>
@@ -1016,7 +1016,7 @@ export default function MemoryGraph({ onSelectTab, onSendMessage }) {
               {selectedNode.isCategory && (
                 <button
                   onClick={() => handleFocusCategory(selectedNode.label)}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-300 hover:bg-cyan-900 text-xs font-mono font-semibold transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-950 border border-amber-800 text-amber-300 hover:bg-amber-900 text-xs font-mono font-semibold transition-colors"
                 >
                   <ArrowUpRight className="w-3.5 h-3.5" />
                   <span>Focus {selectedNode.label} Cluster</span>
@@ -1032,7 +1032,7 @@ export default function MemoryGraph({ onSelectTab, onSendMessage }) {
                       if (onSelectTab) onSelectTab('cockpit');
                     }
                   }}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/80 border border-amber-500/50 text-cyan-300 hover:bg-cyan-900 text-xs font-mono font-bold transition-colors shadow-lg shadow-cyan-500/10"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-950/80 border border-amber-500/50 text-amber-300 hover:bg-amber-900 text-xs font-mono font-bold transition-colors shadow-lg shadow-amber-500/10"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                   <span>Run System Diagnostics</span>

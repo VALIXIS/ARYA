@@ -53,9 +53,9 @@ export default function ExecutionTerminal({ logs = [], onClear }) {
 
             if (log.stage === 'step_start') {
               return (
-                <div key={idx} className="flex items-start gap-2 text-amber-500 bg-cyan-950/20 p-2 rounded-lg border border-cyan-900/40">
+                <div key={idx} className="flex items-start gap-2 text-amber-500 bg-amber-950/20 p-2 rounded-lg border border-amber-900/40">
                   <span className="text-slate-500 text-[10px]">{time}</span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-cyan-300 text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">
                     STEP {log.step}/{log.total}
                   </span>
                   <div>

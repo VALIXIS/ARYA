@@ -85,11 +85,11 @@ export default function DeviceManager({ onDispatchCommand }) {
         return <Smartphone className="w-5 h-5 text-purple-400" />;
       case 'tv':
       case 'smart_tv':
-        return <Tv className="w-5 h-5 text-blue-400" />;
+        return <Tv className="w-5 h-5 text-orange-400" />;
       case 'light':
         return <Lightbulb className="w-5 h-5 text-amber-400" />;
       case 'ac':
-        return <Wind className="w-5 h-5 text-cyan-300" />;
+        return <Wind className="w-5 h-5 text-amber-300" />;
       default:
         return <Wifi className="w-5 h-5 text-slate-400" />;
     }
@@ -263,7 +263,7 @@ export default function DeviceManager({ onDispatchCommand }) {
                     </span>
                   )}
                   {state.temperature !== undefined && (
-                    <span className="px-2 py-0.5 rounded bg-slate-900 text-cyan-300 border border-slate-800">
+                    <span className="px-2 py-0.5 rounded bg-slate-900 text-amber-300 border border-slate-800">
                       🌡️ {state.temperature}°C ({state.mode || 'cool'})
                     </span>
                   )}
@@ -290,7 +290,7 @@ export default function DeviceManager({ onDispatchCommand }) {
                             percent: parseInt(e.target.value),
                           })
                         }
-                        className="w-28 accent-cyan-400 cursor-pointer"
+                        className="w-28 accent-amber-400 cursor-pointer"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2 pt-1">
@@ -485,13 +485,13 @@ export default function DeviceManager({ onDispatchCommand }) {
                           </button>
                           <button
                             onClick={() => sendCommand(device.node_id, 'launch_app', { app: 'hotstar' })}
-                            className="py-1 rounded bg-blue-950/30 hover:bg-blue-900/40 text-blue-300 border border-blue-900/40 text-center"
+                            className="py-1 rounded bg-orange-950/30 hover:bg-orange-900/40 text-orange-300 border border-orange-900/40 text-center"
                           >
                             Hotstar
                           </button>
                           <button
                             onClick={() => sendCommand(device.node_id, 'launch_app', { app: 'amazon' })}
-                            className="py-1 rounded bg-cyan-950/30 hover:bg-cyan-900/40 text-cyan-300 border border-cyan-900/40 text-center"
+                            className="py-1 rounded bg-amber-950/30 hover:bg-amber-900/40 text-amber-300 border border-amber-900/40 text-center"
                           >
                             Prime Video
                           </button>
@@ -536,7 +536,7 @@ export default function DeviceManager({ onDispatchCommand }) {
                       onClick={() =>
                         sendCommand(device.node_id, 'set_color', { value: '#00f2fe' })
                       }
-                      className="px-3 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-800/40 text-cyan-300 text-xs font-mono"
+                      className="px-3 py-1.5 rounded-lg bg-amber-950/50 border border-amber-800/40 text-amber-300 text-xs font-mono"
                     >
                       Cyan
                     </button>
@@ -560,7 +560,7 @@ export default function DeviceManager({ onDispatchCommand }) {
                           temperature: (state.temperature || 22) - 1,
                         })
                       }
-                      className="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-cyan-300 font-bold hover:bg-slate-800"
+                      className="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-amber-300 font-bold hover:bg-slate-800"
                     >
                       -
                     </button>
@@ -573,7 +573,7 @@ export default function DeviceManager({ onDispatchCommand }) {
                           temperature: (state.temperature || 22) + 1,
                         })
                       }
-                      className="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-cyan-300 font-bold hover:bg-slate-800"
+                      className="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-amber-300 font-bold hover:bg-slate-800"
                     >
                       +
                     </button>
