@@ -1,0 +1,11 @@
+
+node_modules/
+__pycache__/
+*.pyc
+.env
+desktop/arya_desktop/whisper_model_tmp/
+desktop/whisper_model_tmp/
+build/
+dist/
+arya.db
+backend/arya.db

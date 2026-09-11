@@ -14,7 +14,12 @@ TRAY_NOTIFICATION = "ARYA is running in the background"
 
 
 def build_tray_icon() -> QIcon:
-    """Build a simple ARYA tray icon without external asset files."""
+    """Build or load the ARYA tray/window icon."""
+    from pathlib import Path
+    ico_path = Path(__file__).resolve().parent / "arya_logo.ico"
+    if ico_path.exists():
+        return QIcon(str(ico_path))
+
     size = 64
     pixmap = QPixmap(size, size)
     pixmap.fill(Qt.transparent)

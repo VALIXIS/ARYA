@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/app/main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/chat(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/ws(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/health(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/memories(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/goals(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/profile(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/"
+    }
+  ]
+}

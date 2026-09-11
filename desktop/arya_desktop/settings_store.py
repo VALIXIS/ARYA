@@ -16,6 +16,10 @@ DEFAULT_SETTINGS = {
     "last_daily_briefing_date": None,
     "last_task_reminder_date": None,
     "last_goal_reminder_date": None,
+    # Voice settings
+    "voice_enabled": True,
+    "voice_auto_read": False,
+    "voice_debug_logs": False,
 }
 
 

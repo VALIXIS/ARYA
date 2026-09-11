@@ -1,0 +1,16 @@
+{
+  "name": "Project ARYA - Autonomous Personal AI Assistant",
+  "short_name": "ARYA",
+  "description": "Production-grade 24/7 autonomous personal AI assistant.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080c14",
+  "theme_color": "#00f2fe",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

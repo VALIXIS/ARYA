@@ -18,3 +18,10 @@ from . import app_tools       # noqa: F401
 from . import file_tools      # noqa: F401
 from . import system_tools    # noqa: F401
 from . import media_tools     # noqa: F401
+from . import device_tools    # noqa: F401
+from . import smarthome_tools # noqa: F401
+from . import mobile_tools    # noqa: F401
+from . import weather_tools   # noqa: F401
+from . import execute_tools   # noqa: F401
+from . import scheduler_tools # noqa: F401
+

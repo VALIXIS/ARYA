@@ -1,0 +1,144 @@
+{
+  "memories": [
+    {
+      "id": 1,
+      "content": "My name is Subhash. Please address me as Subhash / Sir.",
+      "category": "Identity",
+      "created_at": "2026-09-10T21:01:55.837549"
+    },
+    {
+      "id": 2,
+      "content": "Artificial Intelligence & Machine Learning (AIML) at VVITU",
+      "category": "Education",
+      "created_at": "2026-09-10T21:01:55.837642"
+    },
+    {
+      "id": 3,
+      "content": "Career Ambitions: Elite AI Engineer, AI Startup Founder, Autonomous Agent Architect",
+      "category": "Goals",
+      "created_at": "2026-09-10T21:01:55.837650"
+    },
+    {
+      "id": 4,
+      "content": "Personal Interests: Photography, High-End Video Editing, AI Agents, Hackathons, Tech Innovation",
+      "category": "Interests",
+      "created_at": "2026-09-10T21:01:55.837654"
+    },
+    {
+      "id": 5,
+      "content": "Favourite Actor: Prabhas; Favourite Music: Telugu Music, Energetic Soundtrack Instrumentals",
+      "category": "Preferences",
+      "created_at": "2026-09-10T21:01:55.837658"
+    },
+    {
+      "id": 6,
+      "content": "Laptop: SUBHASH-ASUS (Windows 11, 16GB RAM); Phone: I2302 (Android, Wireless ADB)",
+      "category": "Devices",
+      "created_at": "2026-09-10T21:01:55.837661"
+    },
+    {
+      "id": 7,
+      "content": "Primary Focus: Applied artificial intelligence, autonomous agents, full-stack AI products, mobile applications, developer infrastructure, and startup-oriented software systems.",
+      "category": "Technical Identity",
+      "created_at": "2026-09-10T21:01:55.837665"
+    },
+    {
+      "id": 8,
+      "content": "Engineering Orientation: Subhash favors production-oriented implementations rather than isolated prototypes. Projects are generally intended to become deployable products, portfolio assets, startup foundations, or competition-ready systems.",
+      "category": "Technical Identity",
+      "created_at": "2026-09-10T21:01:55.837668"
+    },
+    {
+      "id": 9,
+      "content": "Long Term Direction: Build increasingly autonomous AI systems capable of reasoning, tool use, persistent memory, cross-application orchestration, device control, monitoring, and execution with minimal human intervention.",
+      "category": "Technical Identity",
+      "created_at": "2026-09-10T21:01:55.837671"
+    },
+    {
+      "id": 10,
+      "content": "Valexis / Valixis Portal [Web Portal & AI Ecosystem Hub]: Central personal and organizational portal intended to act as the unified web gateway for Subhash's applications, services, AI systems, projects, and company infrastructure. Positioned as an ecosystem-level interface providing a common entry point into VALIXIS products and future autonomous services. (Stack: React / Next.js, FastAPI, Cloud Database)",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837695"
+    },
+    {
+      "id": 11,
+      "content": "Valexis / Valixis Portal Core Purpose: Unify multiple applications and services under one ecosystem; Provide a central web gateway for VALIXIS systems; Expose project and service interfaces through a common platform; Provide a foundation for future AI-agent-driven workflows and company infrastructure",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837698"
+    },
+    {
+      "id": 12,
+      "content": "Fitora (com.subhash.fitora) [AI Fitness & Wellness Mobile Platform]: Premium Flutter-based AI fitness and wellness application featuring real-time step tracking, hydration reminders & logging, sleep duration monitoring & calculations, workout logging, Health Connect API integration, AI Coach guidance, and dynamic goal analytics. (Stack: Flutter, Dart, Riverpod, Health Connect API, SQLite, Firebase)",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837702"
+    },
+    {
+      "id": 13,
+      "content": "Fitora (com.subhash.fitora) Core Purpose: Track steps, sleep, hydration, and workouts in a unified premium dark-theme UI; Integrate with Android Health Connect API and device sensors for background health sync; Provide AI Coach guidance, dynamic goal calculations, and gamified progress milestones; Offer local offline-first SQLite persistence alongside Firebase Cloud synchronization",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837705"
+    },
+    {
+      "id": 14,
+      "content": "LoopKeeper [Hackathon Innovation / AI Meeting Accountability Engine]: AI-powered meeting accountability system developed for the SRM Hackathon that connects meeting conversation to actual work. Follows the lifecycle of commitments over time: what was said, what was committed, who owns it, what work followed, and whether the commitment was completed. (Stack: )",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837709"
+    },
+    {
+      "id": 15,
+      "content": "LoopKeeper Differentiator: Lifecycle-based accountability: meeting conversation -> commitment extraction -> ownership -> task/work tracking -> progress -> completion.",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837712"
+    },
+    {
+      "id": 16,
+      "content": "Resume Brain [Career AI & Portfolio Intelligence Engine]: AI-powered career-document assistant and resume intelligence platform designed for students, freshers, job seekers, and professionals. Combines resume creation, structured document editing, AI writing, resume analysis, job-description matching, tailoring, and ATS-conscious PDF generation. (Stack: Flutter, Web, LLM document parsing, JSON Schema)",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837715"
+    },
+    {
+      "id": 17,
+      "content": "Pocket Ledger (PocketLedger) [Financial Management Platform]: Personal and business financial-management application focused on expense tracking, transaction recording, ledger organization, budgeting, and progressively more autonomous financial workflows. (Stack: Flutter, Dart, SQLite, Cloud Database)",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837739"
+    },
+    {
+      "id": 18,
+      "content": "Planly (planly_app) [Productivity & Task Planning]: Personal productivity and task-planning application centered on structured daily planning, focused work, calendar-aware organization, reflection, and reminders. (Stack: Flutter, Dart, Local Notifications, State Management)",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837743"
+    },
+    {
+      "id": 19,
+      "content": "Project ARYA [Autonomous AI Assistant OS]: JARVIS-class autonomous personal AI operating system intended to operate continuously across cloud, mobile, and desktop environments. Multi-model agent platform with persistent memory, tool invocation, and cross-device hardware control. (Stack: FastAPI, React, Three.js, Ollama, Groq, Google Gemini, ADB, Supabase)",
+      "category": "Projects",
+      "created_at": "2026-09-10T21:01:55.837747"
+    },
+    {
+      "id": 20,
+      "content": "VALIXIS [Technology Company / Product Ecosystem]: Subhash's broader technology company initiative intended to build games, AI products, applications, developer tools, and autonomous systems. Functions as the organizational umbrella for Resume Brain, Valexis Portal, and company infrastructure.",
+      "category": "Ecosystem",
+      "created_at": "2026-09-10T21:01:55.837750"
+    },
+    {
+      "id": 21,
+      "content": "AI PDF Maker [AI Document Productivity]: Earlier AI document-productivity application in the VALIXIS product lineage and predecessor to Resume Brain.",
+      "category": "Ecosystem",
+      "created_at": "2026-09-10T21:01:55.837753"
+    },
+    {
+      "id": 22,
+      "content": "VALIXIS Company Portal & Internal Infrastructure [Company Operations / Developer Infrastructure]: Internal infrastructure surrounding VALIXIS including GitHub development processes, onboarding workflows, and centralized company services.",
+      "category": "Ecosystem",
+      "created_at": "2026-09-10T21:01:55.837756"
+    }
+  ],
+  "goals": [
+    {
+      "id": 1,
+      "title": "to get an AI internship",
+      "status": "completed",
+      "created_at": "2026-06-18 18:22:36"
+    }
+  ]
+}

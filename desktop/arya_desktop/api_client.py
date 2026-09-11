@@ -29,7 +29,10 @@ class ApiClient:
 
     def send_chat_message(self, message: str) -> str:
         """Send a chat message to the backend."""
-        data = self.post("/chat", {"message": message})
+        from arya_desktop import settings_store
+        settings = settings_store.load_settings()
+        response_length = settings.get("response_length", "Brief")
+        data = self.post("/chat", {"message": message, "response_length": response_length})
         return data.get("reply", "")
 
     def get_tasks(self):

@@ -13,12 +13,16 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'arya.db')}"
-DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+CANONICAL_DB_PATH = os.path.join(BASE_DIR, "arya.db").replace("\\", "/")
 
-# check_same_thread=False is required for SQLite when used with FastAPI,
-# because FastAPI may use the connection across different threads.
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Support both Cloud PostgreSQL/Supabase (DATABASE_URL env) and local SQLite
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    DATABASE_URL = f"sqlite:///{CANONICAL_DB_PATH}"
+
+connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

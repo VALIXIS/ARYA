@@ -7,6 +7,7 @@ Settings page for ARYA Desktop.
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -25,6 +26,11 @@ class SettingsPage(QWidget):
         self.startup_checkbox: QCheckBox
         self.notifications_checkbox: QCheckBox
         self.daily_briefing_checkbox: QCheckBox
+        self.voice_checkbox: QCheckBox
+        self.auto_read_checkbox: QCheckBox
+        self.debug_logs_checkbox: QCheckBox
+        self.response_length_combo: QComboBox
+        self.tts_engine_combo: QComboBox
         self.status_label: QLabel
         self._updating = False
         self._build_ui()
@@ -93,10 +99,80 @@ class SettingsPage(QWidget):
         self.status_label.setObjectName("PageSubtitle")
         self.status_label.setWordWrap(True)
 
+        # ---- Voice panel ----
+        voice_panel = QFrame()
+        voice_panel.setObjectName("DataCard")
+        voice_layout = QVBoxLayout(voice_panel)
+        voice_layout.setContentsMargins(18, 18, 18, 18)
+        voice_layout.setSpacing(12)
+
+        voice_title = QLabel("Voice")
+        voice_title.setObjectName("PlaceholderTitle")
+        voice_layout.addWidget(voice_title)
+
+        voice_row = QHBoxLayout()
+        voice_row.setSpacing(12)
+        self.voice_checkbox = QCheckBox("Enable Voice (Push-to-Talk)")
+        self.voice_checkbox.setObjectName("SettingsCheckbox")
+        self.voice_checkbox.setCursor(Qt.PointingHandCursor)
+        self.voice_checkbox.toggled.connect(self._handle_voice_toggle)
+        voice_row.addWidget(self.voice_checkbox)
+        voice_row.addStretch()
+        voice_layout.addLayout(voice_row)
+
+        auto_read_row = QHBoxLayout()
+        auto_read_row.setSpacing(12)
+        self.auto_read_checkbox = QCheckBox("Auto Read Responses Aloud")
+        self.auto_read_checkbox.setObjectName("SettingsCheckbox")
+        self.auto_read_checkbox.setCursor(Qt.PointingHandCursor)
+        self.auto_read_checkbox.toggled.connect(self._handle_auto_read_toggle)
+        auto_read_row.addWidget(self.auto_read_checkbox)
+        auto_read_row.addStretch()
+        voice_layout.addLayout(auto_read_row)
+
+        debug_logs_row = QHBoxLayout()
+        debug_logs_row.setSpacing(12)
+        self.debug_logs_checkbox = QCheckBox("Enable Voice Debug Logs")
+        self.debug_logs_checkbox.setObjectName("SettingsCheckbox")
+        self.debug_logs_checkbox.setCursor(Qt.PointingHandCursor)
+        self.debug_logs_checkbox.toggled.connect(self._handle_debug_logs_toggle)
+        debug_logs_row.addWidget(self.debug_logs_checkbox)
+        debug_logs_row.addStretch()
+        voice_layout.addLayout(debug_logs_row)
+
+        response_length_row = QHBoxLayout()
+        response_length_row.setSpacing(12)
+        response_length_label = QLabel("Response Length:")
+        response_length_label.setObjectName("SettingsLabel")
+        self.response_length_combo = QComboBox()
+        self.response_length_combo.addItems(["Brief", "Normal", "Detailed"])
+        self.response_length_combo.currentTextChanged.connect(self._handle_response_length_change)
+        response_length_row.addWidget(response_length_label)
+        response_length_row.addWidget(self.response_length_combo)
+        response_length_row.addStretch()
+        voice_layout.addLayout(response_length_row)
+
+        tts_engine_row = QHBoxLayout()
+        tts_engine_row.setSpacing(12)
+        tts_engine_label = QLabel("TTS Engine:")
+        tts_engine_label.setObjectName("SettingsLabel")
+        self.tts_engine_combo = QComboBox()
+        self.tts_engine_combo.addItems(["PowerShell", "pyttsx3"])
+        self.tts_engine_combo.currentTextChanged.connect(self._handle_tts_engine_change)
+        tts_engine_row.addWidget(tts_engine_label)
+        tts_engine_row.addWidget(self.tts_engine_combo)
+        tts_engine_row.addStretch()
+        voice_layout.addLayout(tts_engine_row)
+
+        voice_note = QLabel("Requires: faster-whisper, sounddevice, pyttsx3")
+        voice_note.setObjectName("MetaText")
+        voice_layout.addWidget(voice_note)
+
         page_layout.addWidget(title)
         page_layout.addWidget(subtitle)
         page_layout.addWidget(startup_panel)
         page_layout.addWidget(notifications_panel)
+        page_layout.addWidget(voice_panel)
         page_layout.addWidget(self.status_label)
         page_layout.addStretch()
 
@@ -112,6 +188,11 @@ class SettingsPage(QWidget):
         self.daily_briefing_checkbox.setChecked(
             settings.get("enable_daily_briefing", False)
         )
+        self.voice_checkbox.setChecked(settings.get("voice_enabled", True))
+        self.auto_read_checkbox.setChecked(settings.get("voice_auto_read", False))
+        self.debug_logs_checkbox.setChecked(settings.get("voice_debug_logs", False))
+        self.response_length_combo.setCurrentText(settings.get("response_length", "Brief"))
+        self.tts_engine_combo.setCurrentText(settings.get("tts_engine", "PowerShell"))
         self._updating = False
 
         self._sync_notification_controls()
@@ -200,3 +281,43 @@ class SettingsPage(QWidget):
         settings["enable_daily_briefing"] = enabled
         settings_store.save_settings(settings)
         self._update_status_text()
+
+    def _handle_voice_toggle(self, enabled: bool) -> None:
+        """Save the voice enabled setting."""
+        if self._updating:
+            return
+        settings = settings_store.load_settings()
+        settings["voice_enabled"] = enabled
+        settings_store.save_settings(settings)
+
+    def _handle_auto_read_toggle(self, enabled: bool) -> None:
+        """Save the auto-read responses setting."""
+        if self._updating:
+            return
+        settings = settings_store.load_settings()
+        settings["voice_auto_read"] = enabled
+        settings_store.save_settings(settings)
+
+    def _handle_debug_logs_toggle(self, enabled: bool) -> None:
+        """Save the voice debug logs setting."""
+        if self._updating:
+            return
+        settings = settings_store.load_settings()
+        settings["voice_debug_logs"] = enabled
+        settings_store.save_settings(settings)
+
+    def _handle_response_length_change(self, text: str) -> None:
+        """Save the response length setting."""
+        if self._updating:
+            return
+        settings = settings_store.load_settings()
+        settings["response_length"] = text
+        settings_store.save_settings(settings)
+
+    def _handle_tts_engine_change(self, text: str) -> None:
+        """Save the TTS engine setting."""
+        if self._updating:
+            return
+        settings = settings_store.load_settings()
+        settings["tts_engine"] = text
+        settings_store.save_settings(settings)

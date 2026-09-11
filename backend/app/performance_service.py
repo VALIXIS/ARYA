@@ -45,18 +45,13 @@ def log_event(name: str) -> None:
 
 def get_report() -> dict:
     """Return a compact performance report."""
-    report = {}
+    def avg(name: str) -> float:
+        samples = _timings.get(name, [])
+        return round(sum(samples) / len(samples), 2) if samples else 0.0
 
-    for name, values in _timings.items():
-        samples = list(values)
-        if not samples:
-            continue
-
-        report[name] = {
-            "samples": len(samples),
-            "last_ms": round(samples[-1], 2),
-            "avg_ms": round(sum(samples) / len(samples), 2),
-            "max_ms": round(max(samples), 2),
-        }
-
-    return report
+    return {
+        "Average AI time": avg("ai_response"),
+        "Average memory time": avg("memory_retrieval"),
+        "Average context time": avg("context_resolution"),
+        "Average total request time": avg("total_response"),
+    }

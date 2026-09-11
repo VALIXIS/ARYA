@@ -19,10 +19,13 @@ from typing import Any
 
 class ToolCategory(str, Enum):
     """High-level grouping of tools."""
-    BROWSER  = "browser"
-    APP      = "app"
-    FILE     = "file"
-    SYSTEM   = "system"
+    BROWSER    = "browser"
+    APP        = "app"
+    FILE       = "file"
+    SYSTEM     = "system"
+    DEVICE     = "device"
+    SMARTHOME  = "smarthome"
+
 
 
 class ParamType(str, Enum):

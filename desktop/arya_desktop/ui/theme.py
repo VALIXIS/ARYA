@@ -199,4 +199,35 @@ def dark_theme() -> str:
     #SettingsCheckbox:disabled {
         color: #6b7280;
     }
+
+    #MicButton {
+        background: #1e2028;
+        border: 1.5px solid #303238;
+        border-radius: 8px;
+        padding: 0px;
+        font-size: 18px;
+    }
+
+    #MicButton:hover {
+        background: #24262b;
+        border-color: #5B8CFF;
+    }
+
+    #MicButton:pressed {
+        background: #1a2a4a;
+        border-color: #5B8CFF;
+    }
+
+    #UserVoiceBubble {
+        background: #1a2a4a;
+        border: 1.5px solid #5B8CFF;
+        border-radius: 12px;
+        border-bottom-right-radius: 4px;
+    }
+
+    #VoiceStatus {
+        color: #5B8CFF;
+        font-size: 13px;
+        padding: 4px 0px;
+    }
     """

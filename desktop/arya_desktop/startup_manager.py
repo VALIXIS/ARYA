@@ -65,6 +65,11 @@ def is_startup_enabled() -> bool:
     return get_shortcut_path().exists()
 
 
+def get_icon_path() -> Path:
+    """Return the ARYA icon file path."""
+    return Path(__file__).resolve().parent / "ui" / "arya_logo.ico"
+
+
 def enable_startup() -> None:
     """Create a shortcut in the Windows Startup folder."""
     if not is_windows():
@@ -73,6 +78,7 @@ def enable_startup() -> None:
     target, arguments, working_dir = get_launch_target()
     shortcut_path = get_shortcut_path()
     shortcut_path.parent.mkdir(parents=True, exist_ok=True)
+    icon_path = get_icon_path()
 
     command = f"""
 $shell = New-Object -ComObject WScript.Shell
@@ -82,6 +88,9 @@ $shortcut.Arguments = {_powershell_string(arguments)}
 $shortcut.WorkingDirectory = {_powershell_string(working_dir)}
 $shortcut.WindowStyle = 1
 $shortcut.Description = 'Launch ARYA Desktop on Windows startup'
+if (Test-Path {_powershell_string(str(icon_path))}) {{
+    $shortcut.IconLocation = {_powershell_string(str(icon_path))}
+}}
 $shortcut.Save()
 """.strip()
 

@@ -11,6 +11,7 @@ The classifier layer (LLM) was found to be unreliable with smaller models
 import re
 import json
 from .ai_service import query_llm
+from .memory_validator import ALLOWED_CATEGORIES
 
 print("[BOOT] memory_extractor loaded")
 
@@ -57,15 +58,17 @@ FACT_PATTERNS = [
     (r"^i don't like (.+)$",               "Preferences"),
     (r"^i dislike (.+)$",                  "Preferences"),
 
-    # Other personal facts
-    (r"^i have (.+)$",                      "Other"),
+    # Devices
+    (r"^i have (?:a |an |my )?(.+(?:laptop|phone|pc|desktop|tablet|device|computer|headphones|keyboard|monitor).*)$", "Devices"),
 ]
 
 def _build_llm_prompt() -> str:
     return """You are ARYA's memory extraction subsystem.
 Extract personal facts from the user's text.
 Output MUST be a valid JSON array of objects. Do not include markdown fences.
-Valid categories: Identity, Preferences, Education, Interests, Projects, Goals, Career, Devices, Other.
+Valid categories: Identity, Preferences, Education, Interests, Projects, Goals, Career, Devices.
+Do NOT use any other category. If a fact does not fit, omit it.
+Do NOT extract commands, dates, current locations, weather, or temporary states.
 
 Example input:
 I built Planly and ARYA.
@@ -123,8 +126,12 @@ def extract_memories(message: str) -> list[dict]:
             if isinstance(data, list):
                 for item in data:
                     if isinstance(item, dict) and "content" in item and "category" in item:
-                        print(f"[MEMORY] LLM Extracted: category={item['category']!r}, content={item['content']!r}")
-                        results.append({"content": str(item["content"]), "category": str(item["category"])})
+                        cat = str(item["category"])
+                        if cat not in ALLOWED_CATEGORIES:
+                            print(f"[MEMORY] LLM item dropped (bad category {cat!r}): {item['content']!r}")
+                            continue
+                        print(f"[MEMORY] LLM Extracted: category={cat!r}, content={item['content']!r}")
+                        results.append({"content": str(item["content"]), "category": cat})
         except Exception as exc:
             print(f"[MEMORY] LLM extraction failed: {exc}")
             

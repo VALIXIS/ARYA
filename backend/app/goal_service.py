@@ -51,3 +51,14 @@ def complete_goal(db: Session, query: str) -> models.Goal | None:
     db.commit()
     db.refresh(goal)
     return goal
+
+
+def complete_goal_by_id(db: Session, goal_id: int) -> models.Goal | None:
+    """Toggle completion status for a goal by ID."""
+    goal = db.query(models.Goal).filter(models.Goal.id == goal_id).first()
+    if goal:
+        goal.status = "completed" if goal.status != "completed" else "active"
+        db.commit()
+        db.refresh(goal)
+    return goal
+
