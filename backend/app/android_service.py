@@ -101,6 +101,9 @@ def _run_adb(args: list[str], timeout: float = 10.0, retry_on_offline: bool = Tr
     except subprocess.TimeoutExpired:
         logger.error(f"[ADB] Command timed out: {' '.join(cmd)}")
         return -1, "", "Timeout: phone did not respond in time"
+    except FileNotFoundError:
+        logger.debug("[ADB] ADB binary not found on system (Cloud container environment).")
+        return -1, "", "ADB not installed"
     except Exception as exc:
         logger.error(f"[ADB] Execution error: {exc}")
         return -1, "", str(exc)

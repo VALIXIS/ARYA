@@ -5,7 +5,7 @@ from datetime import datetime
 from app.database import SessionLocal
 from app.models import ScheduledRoutine
 from app.agent_planner import plan
-from app.agent_executor import execute_plan
+from app.agent_executor import execute as execute_plan
 
 logger = logging.getLogger("arya.scheduler")
 
