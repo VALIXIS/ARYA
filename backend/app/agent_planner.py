@@ -603,10 +603,25 @@ def _parse_single_intent(clause: str, raw_context: str = "") -> list[dict]:
             if target:
                 return [{"tool": "delete_task", "params": {"task_identifier": target}}]
 
-    # 13. Instant Factual Knowledge / Web Information
+    # 13. Morning Briefing & Proactive Agenda
+    if re.search(r"\b(briefing|morning\s+briefing|start\s+my\s+day|agenda|daily\s+summary)\b", text):
+        return [{"tool": "generate_morning_briefing", "params": {}}]
+
+    # 14. Email & Calendar Integrations
+    if re.search(r"\b(email|emails|gmail|inbox)\b", text):
+        if "outlook" in text:
+            return [{"tool": "read_outlook_emails", "params": {}}]
+        return [{"tool": "read_gmail", "params": {}}]
+
+    if re.search(r"\b(calendar|schedule|meetings|events)\b", text):
+        if "outlook" in text:
+            return [{"tool": "get_outlook_calendar", "params": {"days": 1}}]
+        return [{"tool": "get_google_calendar", "params": {"days": 1}}]
+
+    # 15. Instant Factual Knowledge / Web Information
     # e.g. "who is elon musk", "what is quantum computing", "tell me about albert einstein", "explain gravity"
     m_info = re.search(r"^(?:who\s+(?:is|was)|what\s+(?:is|was|are)|tell\s+me\s+about|explain)\s+(.+)$", text)
-    if m_info and not any(k in text for k in ("weather", "tv", "phone", "pc", "volume", "device", "file", "folder", "app", "time", "date", "ac", "light", "task", "todo")):
+    if m_info and not any(k in text for k in ("weather", "tv", "phone", "pc", "volume", "device", "file", "folder", "app", "time", "date", "ac", "light", "task", "todo", "briefing", "email", "calendar")):
         topic = m_info.group(1).strip()
         topic = re.sub(r"^(?:the|a|an)\s+", "", topic, flags=re.IGNORECASE).strip()
         if topic:
