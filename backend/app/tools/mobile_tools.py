@@ -121,7 +121,8 @@ def _android_play_youtube(params: dict) -> ToolResult:
 
 def _android_open_whatsapp(params: dict) -> ToolResult:
     contact = params.get("contact")
-    res = android_bridge.open_whatsapp(contact=contact)
+    message = params.get("message")
+    res = android_bridge.open_whatsapp(contact=contact, message=message)
     return ToolResult(
         success=res.get("success", False),
         message=res.get("message", ""),
@@ -311,11 +312,13 @@ registry.register(
         name="android_open_whatsapp",
         description="Open WhatsApp on Android phone, optionally navigating to a chat with a specific contact.",
         category=ToolCategory.DEVICE,
-        params=[ToolParam("contact", ParamType.STRING, "Contact name to open chat with", required=False)],
+        params=[
+            ToolParam("contact", ParamType.STRING, "Contact name or phone number", required=False),
+            ToolParam("message", ParamType.STRING, "Message text to send to the contact", required=False)
+        ],
         examples=[
             "open whatsapp on my phone",
-            "open whatsapp and open chat with adithya",
-            "wake up my phone and open whatsapp and open chat with adithya",
+            "message 9603416707 Hii Gud mrng",
         ],
     ),
     handler=_android_open_whatsapp,

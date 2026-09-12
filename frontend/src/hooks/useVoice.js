@@ -19,6 +19,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
   const micStreamRef = useRef(null);
   const animFrameRef = useRef(null);
   const wakeWordModeRef = useRef(false);
+  const silenceTimerRef = useRef(null);
 
   const callbacksRef = useRef({ onTranscriptReady, onStateChange });
   useEffect(() => {
@@ -60,6 +61,23 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
       const currentText = (final || interim).trim();
       setTranscript(currentText);
 
+      // Auto-submit on silence detection (if not in wake word background mode)
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      if (currentText && !wakeWordModeRef.current) {
+        silenceTimerRef.current = setTimeout(() => {
+          if (recognitionRef.current) {
+            try { recognitionRef.current.stop(); } catch (e) {}
+          }
+          setIsListening(false);
+          stopAudioAnalysis();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+          if (callbacksRef.current.onTranscriptReady) {
+             callbacksRef.current.onTranscriptReady(currentText);
+          }
+          setTranscript('');
+        }, 1200); // 1.2 seconds of silence triggers send
+      }
+
       // Check for voice interrupt keywords while ARYA is speaking
       const lower = currentText.toLowerCase();
       if (['stop', 'stop talking', 'be quiet', 'enough', 'halt'].includes(lower)) {
@@ -73,10 +91,35 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
         if (aryaMatch) {
           const commandAfterWake = aryaMatch[1].trim();
           if (commandAfterWake.length > 2 && callbacksRef.current.onTranscriptReady) {
+            // One-breath command: "Hey ARYA turn off the lights"
             setIsListening(false);
             stopAudioAnalysis();
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
             callbacksRef.current.onTranscriptReady(commandAfterWake);
             setTranscript('');
+            return;
+          } else if (event.results[event.results.length-1].isFinal) {
+            // Two-breath command: "Hey ARYA" ... pauses ... wait for chime
+            // We transition out of wakeWordMode to normal listening mode!
+            try {
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              const osc = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch chime
+              osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+              gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+              gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+              gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+              osc.connect(gainNode);
+              gainNode.connect(audioCtx.destination);
+              osc.start();
+              osc.stop(audioCtx.currentTime + 0.2);
+            } catch(e) {}
+            
+            wakeWordModeRef.current = false; // Disable background mode temporarily
+            setTranscript('');
+            // The continuous listener is already running, so it will just catch the next words as normal!
             return;
           }
         }
@@ -85,6 +128,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
       if (final && !wakeWordModeRef.current && callbacksRef.current.onTranscriptReady) {
         setIsListening(false);
         stopAudioAnalysis();
+        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
         callbacksRef.current.onTranscriptReady(final);
       }
     };
@@ -94,6 +138,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
       setIsListening(false);
       callbacksRef.current.onStateChange?.('idle');
       stopAudioAnalysis();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       // Auto restart if in wake-word mode
       if (wakeWordModeRef.current) {
         setTimeout(() => {
@@ -106,6 +151,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
       setIsListening(false);
       callbacksRef.current.onStateChange?.('idle');
       stopAudioAnalysis();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       // Auto restart if continuous wake word mode is enabled
       if (wakeWordModeRef.current) {
         setTimeout(() => {
@@ -121,6 +167,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
         recognition.abort();
       } catch (e) {}
       stopAudioAnalysis();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     };
   }, []);
 
@@ -184,6 +231,25 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
     }
   }, []);
 
+  // Auto-start wake word on first user interaction
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!wakeWordModeRef.current) {
+        toggleWakeWord();
+      }
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+    
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+    
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, [toggleWakeWord]);
+
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       try {
@@ -206,6 +272,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
       }
       setIsListening(false);
       stopAudioAnalysis();
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       
       // Flush any pending transcript when manually stopped
       setTranscript((currentStr) => {

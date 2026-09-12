@@ -156,7 +156,7 @@ export default function App() {
             <div className="flex items-center gap-2">
               <h1 className="font-bold text-base tracking-wider text-white">PROJECT ARYA</h1>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 border border-amber-800/50 text-amber-300 font-semibold">
-                v3.0 JARVIS
+                v3.0
               </span>
             </div>
             <p className="text-[10px] text-slate-400 font-mono tracking-wide hidden sm:block">
