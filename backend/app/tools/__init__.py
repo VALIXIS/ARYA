@@ -22,6 +22,7 @@ from . import device_tools    # noqa: F401
 from . import smarthome_tools # noqa: F401
 from . import mobile_tools    # noqa: F401
 from . import weather_tools   # noqa: F401
+from . import task_tools      # noqa: F401
 from . import execute_tools   # noqa: F401
 from . import scheduler_tools # noqa: F401
 

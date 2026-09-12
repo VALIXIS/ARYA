@@ -576,22 +576,37 @@ def _parse_single_intent(clause: str, raw_context: str = "") -> list[dict]:
     # 11. Live Weather & Forecasts
     # e.g. "tell me abt the weather tmrw in guntur", "what is the weather in hyderabad", "weather tomorrow"
     if re.search(r"\b(weather|temperature|forecast|rain|climate)\b", text):
-        period = "today"
-        if re.search(r"\b(tomorrow|tmrw|next\s+day|upcoming)\b", text):
-            period = "tomorrow"
         m_loc = re.search(r"\b(?:in|for|at|around)\s+([a-zA-Z\s]+?)(?:\s+(?:today|tomorrow|tmrw|right now|currently)|$)", text)
-        location = "Guntur"
+        city = "Guntur"
         if m_loc:
             loc_cand = m_loc.group(1).strip()
             loc_cand = re.sub(r"\b(the|my|our|city|town)\b", "", loc_cand, flags=re.IGNORECASE).strip()
             if loc_cand and loc_cand.lower() not in {"today", "tomorrow", "tmrw"}:
-                location = loc_cand.title()
-        return [{"tool": "get_weather", "params": {"location": location, "period": period}}]
+                city = loc_cand.title()
+        return [{"tool": "get_weather", "params": {"city": city}}]
 
-    # 12. Instant Factual Knowledge / Web Information
+    # 12. To-Do & Task Management
+    if re.search(r"\b(task|tasks|todo|to-do)\b", text):
+        if re.search(r"\b(add|create|new|remind)\b", text):
+            title = re.sub(r"^(?:add|create|new|remind\s+me\s+to|add\s+to\s+(?:my\s+)?(?:tasks|todo|to-do))\s*", "", text, flags=re.IGNORECASE).strip()
+            if title:
+                return [{"tool": "add_task", "params": {"title": title}}]
+        if re.search(r"\b(list|show|what|get|view)\b", text):
+            status = "completed" if "completed" in text or "done" in text else "active"
+            return [{"tool": "list_tasks", "params": {"status": status}}]
+        if re.search(r"\b(complete|finish|done|check\s*off)\b", text):
+            target = re.sub(r"^(?:complete|finish|mark|done|check\s*off)\s+(?:task\s+)?", "", text, flags=re.IGNORECASE).strip()
+            if target:
+                return [{"tool": "complete_task", "params": {"task_identifier": target}}]
+        if re.search(r"\b(delete|remove)\b", text):
+            target = re.sub(r"^(?:delete|remove)\s+(?:task\s+)?", "", text, flags=re.IGNORECASE).strip()
+            if target:
+                return [{"tool": "delete_task", "params": {"task_identifier": target}}]
+
+    # 13. Instant Factual Knowledge / Web Information
     # e.g. "who is elon musk", "what is quantum computing", "tell me about albert einstein", "explain gravity"
     m_info = re.search(r"^(?:who\s+(?:is|was)|what\s+(?:is|was|are)|tell\s+me\s+about|explain)\s+(.+)$", text)
-    if m_info and not any(k in text for k in ("weather", "tv", "phone", "pc", "volume", "device", "file", "folder", "app", "time", "date", "ac", "light")):
+    if m_info and not any(k in text for k in ("weather", "tv", "phone", "pc", "volume", "device", "file", "folder", "app", "time", "date", "ac", "light", "task", "todo")):
         topic = m_info.group(1).strip()
         topic = re.sub(r"^(?:the|a|an)\s+", "", topic, flags=re.IGNORECASE).strip()
         if topic:
