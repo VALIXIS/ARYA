@@ -120,6 +120,15 @@ def _wake_on_lan(mac: str) -> None:
 # Connection helper
 # --------------------------------------------------------------------------- #
 
+
+def _is_tv_reachable(ip: str, port: int, timeout: float = 1.0) -> bool:
+    import socket
+    try:
+        with socket.create_connection((ip, port), timeout=timeout):
+            return True
+    except (socket.timeout, OSError):
+        return False
+
 def _get_client():
     """Return a connected, registered WebOSClient (cached, thread-safe)."""
     global _client_cache, _client_connected_at
@@ -134,6 +143,10 @@ def _get_client():
         now = time.time()
         if _client_cache is not None and (now - _client_connected_at) < _CLIENT_TTL:
             return _client_cache
+
+        # Fast ping to prevent 21-second freeze when TV is completely off
+        if not _is_tv_reachable(tv_ip, 3001, timeout=2.0) and not _is_tv_reachable(tv_ip, 3000, timeout=1.0):
+            raise RuntimeError(f"LG TV at {tv_ip} is currently unreachable (Powered Off). Use the power on command first.")
 
         try:
             from pywebostv.connection import WebOSClient
