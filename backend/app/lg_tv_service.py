@@ -356,14 +356,15 @@ class LGTVBridge:
         app_id = self._APP_IDS.get(key, app_name)   # fall-through: use as-is
 
         try:
-            from pywebostv.controls import ApplicationControl
+            from pywebostv.controls import ApplicationControl, Application
             ctrl = ApplicationControl(_get_client())
+            app_obj = Application({"id": app_id})
 
             if url and key in ("browser", "com.webos.app.browser"):
                 # Open a specific URL in the browser
-                ctrl.launch(app_id, content_id=url)
+                ctrl.launch(app_obj, content_id=url)
             else:
-                ctrl.launch(app_id)
+                ctrl.launch(app_obj)
 
             return {"ok": True, "action": "launch_app", "app": app_id}
         except Exception as exc:
