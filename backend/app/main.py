@@ -448,12 +448,24 @@ from app.scheduler_service import scheduler_service
 async def startup_event():
     logger.info("Initializing ARYA System Resources...")
     
-    # Initialize background auto-healer and discovery
-    check_and_register_mobile_devices()
+    # Initialize background device discovery safely
+    try:
+        from .database import SessionLocal
+        db = SessionLocal()
+        try:
+            device_service.check_and_register_mobile_devices(db)
+            device_service.check_and_register_lg_tv(db)
+        finally:
+            db.close()
+    except Exception as exc:
+        logger.warning(f"Device discovery skipped on startup: {exc}")
     
     # Initialize Autonomous Scheduler
-    scheduler_service.start()
-    
+    try:
+        scheduler_service.start()
+    except Exception as exc:
+        logger.warning(f"Scheduler start skipped: {exc}")
+        
     logger.info("ARYA System Initialized and Ready.")
 
 

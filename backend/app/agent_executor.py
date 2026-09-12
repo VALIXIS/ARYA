@@ -91,3 +91,6 @@ def execute(plan: list[dict]) -> str:
     # Build reply — join all messages on separate lines
     return "\n".join(r.message for r in results)
 
+execute_plan = execute
+
+
