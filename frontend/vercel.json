@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://arya-qvbp.onrender.com/api/:path*"
+    },
+    {
+      "source": "/chat",
+      "destination": "https://arya-qvbp.onrender.com/chat"
+    }
+  ]
+}

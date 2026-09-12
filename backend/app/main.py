@@ -55,7 +55,22 @@ from fastapi.middleware.cors import CORSMiddleware
 # Create database tables on startup if they don't already exist.
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Project ARYA - Autonomous Agentic OS", version="2.0.0")
+app = FastAPI(title="Project ARYA - Autonomous Agentic OS", version="4.0.0")
+
+@app.get("/")
+def root():
+    return {
+        "status": "online",
+        "system": "ARYA v4.0 Autonomous OS",
+        "message": "Project ARYA Cloud Backend is fully operational 24/7.",
+        "interactive_docs": "/docs",
+        "endpoints": {
+            "chat": "/chat",
+            "devices": "/api/devices",
+            "tasks": "/tasks",
+            "webhook": "/api/webhook/location"
+        }
+    }
 
 # Enable CORS for modern Web & PWA frontends
 app.add_middleware(
