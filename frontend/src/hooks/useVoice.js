@@ -226,24 +226,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
     }
   }, []);
 
-  // Auto-start wake word on first user interaction
-  useEffect(() => {
-    const handleFirstInteraction = () => {
-      if (!wakeWordModeRef.current) {
-        toggleWakeWord();
-      }
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('keydown', handleFirstInteraction);
-    };
-    
-    document.addEventListener('click', handleFirstInteraction);
-    document.addEventListener('keydown', handleFirstInteraction);
-    
-    return () => {
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('keydown', handleFirstInteraction);
-    };
-  }, [toggleWakeWord]);
+
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
