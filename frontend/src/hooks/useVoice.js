@@ -125,12 +125,7 @@ export function useVoice({ onTranscriptReady, onStateChange }) {
         }
       }
 
-      if (final && !wakeWordModeRef.current && callbacksRef.current.onTranscriptReady) {
-        setIsListening(false);
-        stopAudioAnalysis();
-        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-        callbacksRef.current.onTranscriptReady(final);
-      }
+      
     };
 
     recognition.onerror = (err) => {

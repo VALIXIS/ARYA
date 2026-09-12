@@ -383,53 +383,17 @@ def _parse_single_intent(clause: str, raw_context: str = "") -> list[dict]:
                 if query:
                     return [{"tool": "android_play_youtube", "params": {"query": query}}]
 
-    # 3.5 WhatsApp Control (Defaults to Phone natively if action implies messaging)
+    # 3.5 WhatsApp Control
     if "whatsapp" in text:
-        contact = None
-        msg_text = None
-        
-        # Look for "message Adithya", "send message to Adithya", "chat with Adithya"
-        m_c = re.search(r"(?:send\s+(?:a\s+)?message\s+(?:to\s+)?|chat\s+with|message\s+(?:to\s+)?|msg\s+(?:to\s+)?|to\s+)(.+)", text, re.IGNORECASE)
-        if m_c:
-            remainder = m_c.group(1).strip()
-            # Clean off trailing platform tags
-            remainder = re.sub(r"\s+(?:on|in)\s+(?:my\s+)?(?:phone|mobile|android|whatsapp).*$", "", remainder, flags=re.IGNORECASE).strip()
+        # If it's a very simple command, just open it
+        clean_text = re.sub(r"\b(open|launch|on|my|the|phone|mobile|android|whatsapp)\b", "", text).strip()
+        if not clean_text:
+            return [{"tool": "android_open_whatsapp", "params": {}}]
             
-            # Extract the actual message content if they specified it
-            m_msg = re.search(r"^(.*?)\s+(?:saying|texting|with\s+message)\s+(.+)$", remainder, re.IGNORECASE)
-            
-            if m_msg:
-                contact = m_msg.group(1).strip()
-                msg_text = m_msg.group(2).strip()
-            else:
-                # 1. Check if it starts with a phone number (10+ digits)
-                m_num = re.search(r"^(\+?\d{10,})\s+(.+)$", remainder)
-                if m_num:
-                    contact = m_num.group(1).strip()
-                    msg_text = m_num.group(2).strip()
-                else:
-                    # 2. Check for common short messages at the end
-                    m_short = re.search(r"^(.*?)\s+(hi|hello|hey|gm|gn|how\s+are\s+you|what\s+is\s+up|what's\s+up|joined|done|ok|okay)$", remainder, re.IGNORECASE)
-                    if m_short:
-                        contact = m_short.group(1).strip()
-                        msg_text = m_short.group(2).strip()
-                    else:
-                        # 3. Fallback: assume the first word is the contact and the rest is the message
-                        parts = remainder.split(maxsplit=1)
-                        if len(parts) == 2:
-                            contact = parts[0]
-                            msg_text = parts[1]
-                        else:
-                            contact = remainder
-
-        if contact or "phone" in text or "mobile" in text or "android" in text:
-            # If there's a contact target OR they specifically said phone, route to android whatsapp tool
-            params = {}
-            if contact:
-                params["contact"] = contact
-            if msg_text:
-                params["message"] = msg_text
-            return [{"tool": "android_open_whatsapp", "params": params}]
+        # For complex conversational WhatsApp commands with numbers and messages,
+        # it is safer and much more accurate to let the LLM extract the arguments.
+        # So we simply return [] to fall through to the LLM.
+        pass
 
         # Phone Calls
         if re.search(r"\b(call|dial)\b", text):
