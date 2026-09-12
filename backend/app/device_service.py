@@ -113,8 +113,8 @@ def update_device_state(db: Session, node_id: str, new_state: dict) -> None:
 
 def get_real_local_ip() -> str:
     """Detect the real local LAN IP (preferring active Wi-Fi on 192.168.x.x)."""
-    import psutil, socket
     try:
+        import psutil, socket
         addrs = psutil.net_if_addrs()
         candidates = []
         for nic, addr_list in addrs.items():
@@ -127,19 +127,24 @@ def get_real_local_ip() -> str:
                     score = 0
                     if "wi-fi" in nic_lower or "wifi" in nic_lower or "wlan" in nic_lower:
                         score = 100
-                    elif "ethernet" in nic_lower or "eth" in nic_lower:
-                        score = 80
-                    elif ip.startswith("192.168."):
-                        score = 60
-                    elif ip.startswith("10.") and "virtual" not in nic_lower and "wsl" not in nic_lower:
-                        score = 40
+                    elif "ethernet" in nic_lower:
+                        score = 50
+                    if ip.startswith("192.168."):
+                        score += 30
+                    elif ip.startswith("10."):
+                        score += 20
                     candidates.append((score, ip))
         if candidates:
             candidates.sort(key=lambda x: x[0], reverse=True)
             return candidates[0][1]
     except Exception:
         pass
-    return "127.0.0.1"
+
+    import socket
+    try:
+        return socket.gethostbyname(socket.gethostname())
+    except Exception:
+        return "127.0.0.1"
 
 
 def get_real_host_telemetry() -> dict:
