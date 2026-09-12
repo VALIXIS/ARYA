@@ -331,18 +331,24 @@ class AndroidBridge:
             logger.warning(f"[ADB] Failed to unlock screen: {exc}")
 
     @classmethod
-    def play_youtube_video(cls, query: str, serial: str | None = None) -> dict[str, Any]:
-        """Search YouTube and play the top video directly on the Android phone."""
+    def play_youtube_video(cls, query: str, search_only: bool = False, serial: str | None = None) -> dict[str, Any]:
+        """Search YouTube or play top video on Android phone."""
         cls.ensure_unlocked(cls.DEFAULT_PIN, serial=serial)
-        from .tools.browser_tools import _scrape_first_youtube_video
-        video_url = _scrape_first_youtube_video(query)
-        if not video_url:
+        
+        if search_only:
             video_url = "https://www.youtube.com/results?search_query=" + query.replace(" ", "+")
+        else:
+            from .tools.browser_tools import _scrape_first_youtube_video
+            video_url = _scrape_first_youtube_video(query)
+            if not video_url:
+                video_url = "https://www.youtube.com/results?search_query=" + query.replace(" ", "+")
+
         args = ["-s", serial] if serial else []
         code, out, err = _run_adb(args + ["shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", video_url])
+        msg = f"Opened YouTube search for '{query}' on phone." if search_only else f"Playing '{query}' on phone YouTube."
         return {
             "success": code == 0,
-            "message": f"Playing '{query}' on phone YouTube." if code == 0 else f"Failed to play on phone: {err}",
+            "message": msg if code == 0 else f"Failed on phone: {err}",
             "url": video_url,
         }
 

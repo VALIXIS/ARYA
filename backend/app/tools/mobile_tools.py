@@ -112,7 +112,8 @@ def _android_unlock(params: dict) -> ToolResult:
 
 def _android_play_youtube(params: dict) -> ToolResult:
     query = params.get("query", "").strip()
-    res = android_bridge.play_youtube_video(query)
+    search_only = params.get("search_only", False)
+    res = android_bridge.play_youtube_video(query, search_only=search_only)
     return ToolResult(
         success=res.get("success", False),
         message=res.get("message", ""),

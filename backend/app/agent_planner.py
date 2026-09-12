@@ -372,16 +372,20 @@ def _parse_single_intent(clause: str, raw_context: str = "") -> list[dict]:
 
         # YouTube song search & playback on phone:
         # e.g. "open youtube on my phone and search for Telugu songs and play the first one",
-        # "search for telugu songs on my phone and play", "play telugu songs on my phone"
-        if (re.search(r"\bplay\b", text) and any(k in text for k in ("songs", "song", "video", "track", "music", "youtube"))) or ("youtube" in text and any(k in text for k in ("search", "play", "first"))):
+        # "search for telugu songs on my phone", "play telugu songs on my phone"
+        if ("youtube" in text or "video" in text or "song" in text) and any(k in text for k in ("search", "play", "first", "watch")):
             m_yt = re.search(r"(?:search\s+(?:for\s+)?|play\s+(?:some\s+)?)(.+?)(?:\s+and\s+play.*|\s+(?:on|in)\s+(?:my\s+)?phone.*|$)", text, re.IGNORECASE)
             if m_yt:
                 query = m_yt.group(1).strip()
                 query = re.sub(r"\s+(?:on|in)\s+(?:my\s+)?phone.*$", "", query, flags=re.IGNORECASE).strip()
                 query = re.sub(r"\s+and\s+play\s+the\s+first\s+one$", "", query, flags=re.IGNORECASE).strip()
-                query = re.sub(r"\b(?:on\s+phone|in\s+phone|youtube)\b", "", query, flags=re.IGNORECASE).strip()
+                query = re.sub(r"\b(?:on\s+phone|in\s+phone|mobile|android|youtube)\b", "", query, flags=re.IGNORECASE).strip()
+                
+                # Check if user specifically wants search results only (didn't ask to play)
+                search_only = "search" in text and "play" not in text
+                
                 if query:
-                    return [{"tool": "android_play_youtube", "params": {"query": query}}]
+                    return [{"tool": "android_play_youtube", "params": {"query": query, "search_only": search_only}}]
 
     # 3.5 WhatsApp Control
     if "whatsapp" in text:
