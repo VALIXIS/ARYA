@@ -21,6 +21,10 @@ import DeviceManager from './components/DeviceManager';
 import { useVoice } from './hooks/useVoice';
 import { useWebSocket } from './hooks/useWebSocket';
 
+const API_BASE = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? ''
+  : 'https://arya-qvbp.onrender.com';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('cockpit'); // cockpit, terminal, graph, devices
   const [coreState, setCoreState] = useState('idle'); // idle, listening, thinking, executing, speaking
@@ -101,7 +105,7 @@ export default function App() {
     if (!sent) {
       addTerminalLog({ text: `[RELAY] WebSocket reconnecting — falling back to HTTP channel...` });
       try {
-        const res = await fetch('/chat', {
+        const res = await fetch(`${API_BASE}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text, response_length: responseLength }),

@@ -21,9 +21,13 @@ export function useWebSocket({ onStateChange, onAgentExecution, onChatReply }) {
   const connect = useCallback(() => {
     if (isUnmountedRef.current) return;
 
-    // Determine WS URL based on current host
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.hostname}:8000/ws/agent`;
+    // Determine WS URL based on environment (localhost vs Cloud Vercel)
+    let wsUrl;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      wsUrl = 'ws://localhost:8000/ws/agent';
+    } else {
+      wsUrl = 'wss://arya-qvbp.onrender.com/ws/agent';
+    }
 
     try {
       if (wsRef.current) {
