@@ -7,8 +7,11 @@ profile building, and AI chat.
 """
 
 import os
+import logging
 from pathlib import Path
 from dotenv import load_dotenv
+
+logger = logging.getLogger("arya.main")
 
 # Load environment variables from backend/.env (TV_IP, TV_MAC, API keys, etc.)
 _env_file = Path(__file__).parent.parent / ".env"
